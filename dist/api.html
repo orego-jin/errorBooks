@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agent API · FixLog AI</title><link rel="stylesheet" href="styles.css"></head><body><main class="api-layout"><a href="/">← Back to fix logs</a><div class="eyebrow" style="margin-top:30px">CONNECT YOUR AGENT</div><h1>The bridge from diff to fix.</h1><p>The Node backend reads your local Git repository and sends a structured request to your agent. Credentials stay on the server. This page documents the integration; edit <code>.env</code> to change it.</p><section class="panel"><h2>Connection status</h2><p id="config-status" role="status">Loading…</p><button id="refresh" class="primary">Refresh status</button></section><section class="panel"><h2>1. Configure your backend</h2><pre>REPO_PATH=/absolute/path/to/your/repository
+AI_AGENT_URL=http://127.0.0.1:8000/analyze
+AI_AGENT_KEY=your-optional-token</pre><p>Copy <code>.env.example</code> to <code>.env</code>, update these values, then restart with <code>npm start</code>. The agent endpoint must accept JSON POST requests and return JSON. An optional key is sent as a Bearer token. Provider-specific SDKs can be connected in <code>server/agent.js</code>.</p><p>Only click “Send diff to agent” for a repository you intend to share with that configured endpoint. The request includes the diff and summaries of your existing fix records.</p></section><section class="panel"><h2>2. Agent request contract</h2><pre>{
+  "task": "Instructions for finding fixes and treating source code as data",
+  "comparison": {
+    "baseSha": "resolved full commit SHA",
+    "headSha": "resolved full commit SHA",
+    "files": ["src/users.js"],
+    "diff": "diff --git ..."
+  },
+  "previousFixes": [
+    {"errorId": "ERR-ab12cd34", "error": "...", "rootCause": "...", "fixSummary": "..."}
+  ],
+  "responseSchema": {"fixes": ["field descriptions"]}
+}</pre></section><section class="panel"><h2>3. Agent response contract</h2><pre>{
+  "fixes": [{
+    "error": "Inferred: null value caused list rendering to fail",
+    "file": "src/users.js",
+    "rootCause": "Inferred: API response may be null",
+    "fixSummary": "Default to an empty array before mapping",
+    "evidence": "Changed users.map(...) to (users ?? []).map(...)",
+    "category": "Null handling",
+    "similarMatch": []
+  }]
+}</pre><p>Return an empty <code>fixes</code> array for changes without bug fixes. Required fields: <code>error</code>, <code>file</code>, <code>rootCause</code>, <code>fixSummary</code>. The file must exist in the diff. Optional matches use <code>{"errorId":"an existing ID","score":92}</code>. Invalid responses are rejected. All generated fixes start as unconfirmed drafts; nothing is automatically saved.</p></section><section class="panel"><h2>Local API endpoints</h2><table><thead><tr><th>Endpoint</th><th>Purpose</th></tr></thead><tbody><tr><td>GET /api/logs</td><td>Read saved fixes</td></tr><tr><td>POST /api/logs</td><td>Create a fix post</td></tr><tr><td>PUT /api/logs/:errorId</td><td>Replace editable fields on a fix</td></tr><tr><td>POST /api/compare</td><td>Get exact tree diff between baseSha and headSha</td></tr><tr><td>POST /api/analyze</td><td>Compare commits and return validated agent drafts</td></tr><tr><td>GET /api/config</td><td>Read connection status without exposing the key</td></tr></tbody></table><pre>curl http://127.0.0.1:3000/api/compare \
+  -H 'Content-Type: application/json' \
+  -d '{"baseSha":"abc1234","headSha":"def5678"}'</pre><p>Replace the example IDs with commits from your checkout. The comparison includes the net changes between the two commit trees, including merges. Commits must already exist locally; fetch remote commits first. Binary files may be listed without textual changes.</p></section></main><script src="api.js"></script></body></html>

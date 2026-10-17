@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Turn code fixes into searchable team knowledge.">
+        <title>FixLog AI — Fix once. Find it forever.</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <aside class="sidebar">
+            <a class="brand" href="./">
+                <span class="robot">▣</span> FixLog AI<small>TURN FIXES INTO<br>SHARED KNOWLEDGE</small></a>
+            <nav aria-label="Main navigation">
+                <button class="nav active" data-view="all">▦ <span>Dashboard</span></button>
+                <button class="nav" data-view="logs">▤ <span>Error logs</span></button>
+                <button class="nav" data-view="similar">⌕ <span>Similar issues</span></button>
+                <a class="nav" href="api.html">⚙ <span>Agent API</span></a>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="poster">SAME<br>ERRORS.<br>LESS<br>LATER. <span>↗</span></div>
+                <small>BUILT FOR THE NEXT FIX.</small>
+            </div>
+        </aside>
+        <div class="app">
+            <header>
+                <div class="breadcrumb">Workspace <span>/</span> <b>Engineering</b></div>
+                <span class="demo-label">● LOCAL WORKSPACE</span><span class="avatar">JD</span>
+            </header>
+            <main>
+                <div class="intro">
+                    <div>
+                        <div class="eyebrow">YOUR CODEBASE HAS A MEMORY NOW.</div>
+                        <h1>Error fix logging<span>.</span></h1>
+                        <p>Every fix has a story. Keep it, connect it, never solve it twice.</p>
+                    </div>
+                    <div class="sticker">FIX ONCE.<br>FIND IT FOREVER. ↗</div>
+                </div>
+                <section class="commit-box" aria-label="Analyze a commit">
+                    <div class="commit-heading"><span class="square">↳</span><div><h2>Turn a commit into knowledge</h2><p>Compare two commits from your configured local repository.</p></div><span class="pill">LOCAL GIT + NODE</span></div><form id="analyze-form"><label>Base commit<input id="base" placeholder="Earlier commit SHA" required pattern="[a-fA-F0-9]{7,40}"></label><label>Head commit<input id="head" placeholder="Fixed commit SHA" required pattern="[a-fA-F0-9]{7,40}"></label><button class="primary" type="submit">Compare commits ↗</button></form><p class="hint">Uses the local repository configured in REPO_PATH. <a href="api.html">Connect your AI agent →</a></p><p id="analysis-status" role="status" hidden></p><details id="diff-panel" hidden><summary>Inspect commit diff</summary><pre id="diff-output"></pre><button id="run-agent" class="primary" type="button">Send diff to agent</button></details><div id="drafts"></div>
+                </section>
+                <section class="metrics" aria-label="Workspace summary">
+                    <article class="metric yellow"><span>FIXES LOGGED <b>▤</b></span><strong id="total">8</strong><small>Knowledge worth keeping</small><div class="bars">▂▃▅▆</div></article><article class="metric blue"><span>ERROR PATTERNS <b>⟳</b></span><strong id="patterns">5</strong><small>Spot the recurring themes</small><div class="bars">▂▅▃▇</div></article><article class="metric green"><span>RELATED FIXES <b>↗</b></span><strong id="matched">6</strong><small>Connected to past solutions</small><div class="bars">▂▃▅▇</div></article><article class="metric pink"><span>NEEDS REVIEW <b>◷</b></span><strong id="review">2</strong><small>A human makes the final call</small><div class="bars">▇▅▃▂</div></article>
+                </section>
+
+                <div class="workspace">
+                    <section class="panel logs">
+                        <div class="panel-title"><h2 id="table-title">▤ Recent fix logs</h2>
+                            <button id="new-log" class="primary">+ New fix post</button>
+                            <button id="export" class="text-button">Export JSON ↗</button>
+                        </div>
+                        <div class="filters">
+                            <label class="search"><span>⌕</span><input id="search" aria-label="Search fix logs" placeholder="Search errors, files, or fixes…"></label>
+                            <select id="filter" aria-label="Filter review status">
+                                <option value="all">All records</option>
+                                <option value="review">Needs review</option>
+                                <option value="confirmed">Confirmed</option>
+                            </select>
+                        </div>
+                        <div class="table-wrap"><table><thead><tr><th>errorId</th><th>error</th><th>file</th><th>root cause</th><th>fix summary</th><th>similar match</th></tr></thead><tbody id="rows"></tbody></table></div>
+                        <footer class="table-footer"><span id="count"></span><span>Click an error ID to expand and edit ↗</span></footer>
+                    </section>
+                    <aside class="details">
+                        <section class="panel">
+                            <div class="panel-title yellow"><h2>✦ Fix insight</h2><span>DETAILS</span></div><div id="insight" class="panel-body"></div>
+                        </section>
+                        <section class="panel">
+                            <div class="panel-title green"><h2>↗ Related knowledge</h2></div><div id="related" class="panel-body"></div>
+                        </section>
+                        <section class="note">
+                            <span>THE WORKFLOW</span><h3>From “fixed it”<br>to “found it.”</h3><ol><li>Read the commit diff</li><li>Explain the fix with AI</li><li>Connect similar errors</li><li>Review & keep the knowledge</li></ol>
+                        </section>
+                    </aside>
+                </div>
+                <footer class="page-footer">FixLog AI <span>Small fixes. Shared knowledge. Better builds.</span><span>HACKATHON EDITION / 01</span></footer>
+            </main>
+        </div>
+        <dialog id="editor">
+            <form id="edit-form">
+                <div class="editor-heading">
+                    <h2 id="editor-title">New fix post</h2><button type="button" id="close-editor" aria-label="Close editor">×</button>
+                </div>
+                <label>Error<textarea name="error" required maxlength="10000"></textarea></label>
+                <label>File<input name="file" required maxlength="10000"></label>
+                <label>Root cause<textarea name="rootCause" required maxlength="10000"></textarea></label>
+                <label>Fix summary<textarea name="fixSummary" required maxlength="10000"></textarea></label>
+                <label>Evidence / notes<textarea name="evidence" maxlength="10000"></textarea></label>
+                <label>Category<input name="category" maxlength="10000"></label>
+                <label>Base SHA<input name="baseSha" pattern="[a-fA-F0-9]{7,40}"></label>
+                <label>Commit SHA<input name="commitSha" pattern="[a-fA-F0-9]{7,40}"></label>
+                <label>Similar matches (one errorId,score per line)<textarea name="matches" placeholder="ERR-ab12cd34,92"></textarea><small>Use an existing error ID and a score from 0 to 100.</small></label>
+                <label class="checkbox"><input type="checkbox" name="reviewed"> Reviewed and confirmed</label>
+                <p id="editor-status" role="status"></p>
+                <button class="primary" type="submit">Save fix post</button>
+            </form>
+        </dialog>
+        <p id="page-status" role="status"></p>
+        <script src="app.js"></script>
+    </body>
+</html>
