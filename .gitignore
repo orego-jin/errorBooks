@@ -1,0 +1,17 @@
+# Dependency directories
+node_modules/
+
+# Logs
+*.log
+
+# dotenv environment variable files
+.env
+
+
+# Mac files
+.DS_Store
+
+
+
+
+
